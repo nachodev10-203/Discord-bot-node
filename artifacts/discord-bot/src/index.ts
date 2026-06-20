@@ -4,7 +4,6 @@ import {
   Events,
   Collection,
   GuildMember,
-  TextChannel,
 } from "discord.js";
 import { commands } from "./commands/index.js";
 import { handleBoost } from "./boost.js";
@@ -23,8 +22,13 @@ for (const command of commands) {
   commandCollection.set(command.data.name, command);
 }
 
+const guildBoostCache = new Map<string, number>();
+
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`✅ Bot is online as ${readyClient.user.tag}`);
+  for (const guild of readyClient.guilds.cache.values()) {
+    guildBoostCache.set(guild.id, guild.premiumSubscriptionCount ?? 0);
+  }
 });
 
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
@@ -34,7 +38,14 @@ client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
     newMember.premiumSince !== null && newMember.premiumSince !== undefined;
 
   if (wasBooster && isBooster) {
-    await handleBoost(newMember as GuildMember);
+    const guildId = newMember.guild.id;
+    const prevCount = guildBoostCache.get(guildId) ?? 0;
+    const newCount = newMember.guild.premiumSubscriptionCount ?? 0;
+    const boostsAdded = Math.max(1, newCount - prevCount);
+
+    guildBoostCache.set(guildId, newCount);
+
+    await handleBoost(newMember as GuildMember, boostsAdded);
   }
 });
 

@@ -3,7 +3,7 @@ import { getBoostChannel } from "./storage.js";
 
 const FALLBACK_CHANNEL_NAME = "general";
 
-export async function handleBoost(member: GuildMember): Promise<void> {
+export async function handleBoost(member: GuildMember, boostsAdded = 1): Promise<void> {
   const guild = member.guild;
 
   const storedChannelId = await getBoostChannel(guild.id);
@@ -36,15 +36,14 @@ export async function handleBoost(member: GuildMember): Promise<void> {
 
   const embed = new EmbedBuilder()
     .setColor(0xf47fff)
-    .setTitle("🚀 New Server Boost!")
-    .setDescription(
-      `**${member.displayName}** just boosted the server! Thank you so much for your support! 💖`
-    )
     .setThumbnail(member.displayAvatarURL({ size: 256 }))
-    .addFields(
-      { name: "Booster", value: `<@${member.id}>`, inline: true },
-      { name: "Total Boosts", value: `${guild.premiumSubscriptionCount ?? 0}`, inline: true },
-      { name: "Server Level", value: `Level ${guild.premiumTier}`, inline: true }
+    .setDescription(
+      [
+        `✨ Muito obrigado <@${member.id}> pelo boost!`,
+        `🚀 Você acabou de adicionar **${boostsAdded}** boost(s) ao servidor.`,
+        `🎖️ Seu apoio ajuda o servidor a crescer cada vez mais.`,
+        `❤️ Aproveite seus benefícios exclusivos de Booster.`,
+      ].join("\n")
     )
     .setFooter({ text: guild.name, iconURL: guild.iconURL() ?? undefined })
     .setTimestamp();

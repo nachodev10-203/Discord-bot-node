@@ -2,7 +2,6 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   PermissionFlagsBits,
-  EmbedBuilder,
   GuildMember,
 } from "discord.js";
 import type { Command } from "./index.js";
@@ -15,7 +14,7 @@ export const boostmessageCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator) as SlashCommandBuilder,
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await handleBoost(interaction.member as GuildMember);
+    await handleBoost(interaction.member as GuildMember, 1);
     await interaction.reply({
       content: "✅ Boost message preview sent to your boost channel!",
       ephemeral: true,
