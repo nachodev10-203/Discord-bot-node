@@ -3,6 +3,7 @@ import { pingCommand } from "./ping.js";
 import { boostmessageCommand } from "./boostmessage.js";
 import { serverinfoCommand } from "./serverinfo.js";
 import { booststatsCommand } from "./booststats.js";
+import { setboostchannelCommand } from "./setboostchannel.js";
 
 export interface Command {
   data: SlashCommandBuilder;
@@ -14,4 +15,5 @@ export const commands: Command[] = [
   boostmessageCommand,
   serverinfoCommand,
   booststatsCommand,
+  setboostchannelCommand,
 ];
