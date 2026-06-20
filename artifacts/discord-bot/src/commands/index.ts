@@ -4,6 +4,7 @@ import { boostmessageCommand } from "./boostmessage.js";
 import { serverinfoCommand } from "./serverinfo.js";
 import { booststatsCommand } from "./booststats.js";
 import { setboostchannelCommand } from "./setboostchannel.js";
+import { setboostmessageCommand } from "./setboostmessage.js";
 
 export interface Command {
   data: SlashCommandBuilder;
@@ -16,4 +17,5 @@ export const commands: Command[] = [
   serverinfoCommand,
   booststatsCommand,
   setboostchannelCommand,
+  setboostmessageCommand,
 ];

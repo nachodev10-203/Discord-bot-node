@@ -10,6 +10,7 @@ const settingsPath = path.join(dataDir, "guild-settings.json");
 
 interface GuildSettings {
   boostChannelId?: string;
+  boostMessage?: string;
 }
 
 type Settings = Record<string, GuildSettings>;
@@ -36,5 +37,16 @@ export async function getBoostChannel(guildId: string): Promise<string | undefin
 export async function setBoostChannel(guildId: string, channelId: string): Promise<void> {
   const settings = await readSettings();
   settings[guildId] = { ...settings[guildId], boostChannelId: channelId };
+  await writeSettings(settings);
+}
+
+export async function getBoostMessage(guildId: string): Promise<string | undefined> {
+  const settings = await readSettings();
+  return settings[guildId]?.boostMessage;
+}
+
+export async function setBoostMessage(guildId: string, message: string): Promise<void> {
+  const settings = await readSettings();
+  settings[guildId] = { ...settings[guildId], boostMessage: message };
   await writeSettings(settings);
 }

@@ -1,7 +1,24 @@
 import { GuildMember, TextChannel, EmbedBuilder } from "discord.js";
-import { getBoostChannel } from "./storage.js";
+import { getBoostChannel, getBoostMessage } from "./storage.js";
 
 const FALLBACK_CHANNEL_NAME = "general";
+
+export const DEFAULT_BOOST_MESSAGE = [
+  "✨ Muito obrigado {user} pelo boost!",
+  "🚀 Você acabou de adicionar {boostsAdded} boost(s) ao servidor.",
+  "🎖️ Seu apoio ajuda o servidor a crescer cada vez mais.",
+  "❤️ Aproveite seus benefícios exclusivos de Booster.",
+].join("\n");
+
+export function formatBoostMessage(
+  template: string,
+  member: GuildMember,
+  boostsAdded: number
+): string {
+  return template
+    .replace(/\{user\}/g, `<@${member.id}>`)
+    .replace(/\{boostsAdded\}/g, String(boostsAdded));
+}
 
 export async function handleBoost(member: GuildMember, boostsAdded = 1): Promise<void> {
   const guild = member.guild;
@@ -34,17 +51,13 @@ export async function handleBoost(member: GuildMember, boostsAdded = 1): Promise
     return;
   }
 
+  const template = (await getBoostMessage(guild.id)) ?? DEFAULT_BOOST_MESSAGE;
+  const description = formatBoostMessage(template, member, boostsAdded);
+
   const embed = new EmbedBuilder()
     .setColor(0xf47fff)
     .setThumbnail(member.displayAvatarURL({ size: 256 }))
-    .setDescription(
-      [
-        `✨ Muito obrigado <@${member.id}> pelo boost!`,
-        `🚀 Você acabou de adicionar **${boostsAdded}** boost(s) ao servidor.`,
-        `🎖️ Seu apoio ajuda o servidor a crescer cada vez mais.`,
-        `❤️ Aproveite seus benefícios exclusivos de Booster.`,
-      ].join("\n")
-    )
+    .setDescription(description)
     .setFooter({ text: guild.name, iconURL: guild.iconURL() ?? undefined })
     .setTimestamp();
 

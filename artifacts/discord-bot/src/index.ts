@@ -7,6 +7,11 @@ import {
 } from "discord.js";
 import { commands } from "./commands/index.js";
 import { handleBoost } from "./boost.js";
+import {
+  BOOST_MESSAGE_MODAL_ID,
+  BOOST_MESSAGE_INPUT_ID,
+} from "./commands/setboostmessage.js";
+import { setBoostMessage } from "./storage.js";
 
 const client = new Client({
   intents: [
@@ -50,6 +55,33 @@ client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
+  if (interaction.isModalSubmit()) {
+    if (interaction.customId === BOOST_MESSAGE_MODAL_ID) {
+      const guildId = interaction.guildId;
+      if (!guildId) {
+        await interaction.reply({ content: "Could not determine server.", ephemeral: true });
+        return;
+      }
+
+      const newMessage = interaction.fields.getTextInputValue(BOOST_MESSAGE_INPUT_ID);
+      await setBoostMessage(guildId, newMessage);
+
+      await interaction.reply({
+        content: [
+          "✅ Boost message updated! Here's a preview:",
+          "```",
+          newMessage
+            .replace(/\{user\}/g, "@Username")
+            .replace(/\{boostsAdded\}/g, "2"),
+          "```",
+          "Use `/boostmessage` to send a live preview to your boost channel.",
+        ].join("\n"),
+        ephemeral: true,
+      });
+    }
+    return;
+  }
+
   if (!interaction.isChatInputCommand()) return;
 
   const command = commandCollection.get(interaction.commandName);
