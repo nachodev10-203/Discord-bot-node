@@ -1,0 +1,8 @@
+[deploy]
+startCommand = "node --enable-source-maps ./dist/index.mjs"
+
+[build]
+buildCommand = "pnpm install --no-frozen-lockfile && pnpm run build"
+
+[variables]
+RAILPACK_INSTALL_CMD = "pnpm install --no-frozen-lockfile"
