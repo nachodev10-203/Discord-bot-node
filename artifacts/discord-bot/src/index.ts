@@ -36,6 +36,23 @@ client.once(Events.ClientReady, (readyClient) => {
   }
 });
 
+client.on(Events.Error, (error) => {
+  console.error("⚠️  Discord client error (connection kept):", error.message);
+});
+
+client.on(Events.ShardError, (error, shardId) => {
+  console.error(`⚠️  Shard ${shardId} WebSocket error (will auto-reconnect):`, error.message);
+});
+
+client.on(Events.Warn, (message) => {
+  console.warn("⚠️  Discord warning:", message);
+});
+
+client.on(Events.Invalidated, () => {
+  console.error("❌ Session invalidated — exiting so the process restarts.");
+  process.exit(1);
+});
+
 client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
   const wasBooster =
     oldMember.premiumSince === null || oldMember.premiumSince === undefined;
@@ -101,6 +118,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
       await interaction.reply(reply);
     }
   }
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("⚠️  Unhandled promise rejection (bot kept running):", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("⚠️  Uncaught exception (bot kept running):", error.message);
 });
 
 const token = process.env.DISCORD_BOT_TOKEN;
